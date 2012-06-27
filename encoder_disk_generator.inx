@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<inkscape-extension>
+<_name>Encoder Disk Generator</_name>
+<id>dgkelectronics.com.encoder.disk.generator</id>
+<dependency type="executable" location="extensions">inkex.py</dependency>
+<dependency type="executable" location="extensions">encoder_disk_generator.py</dependency>
+<param name="diameter" type="float" min="0.0" max="1000.0" _gui-text="Diameter of the encoder disk">0.0</param>
+<param name="hole_diameter" type="float" min="0.0" max="1000.0" _gui-text="Diameter of the center hole">0.0</param>
+<param name="segments" type="int" min="0" max="10000" _gui-text="Number of segments">0</param>
+<param name="outer_encoder_diameter" type="float" min="0.0" max="1000.0" _gui-text="Diameter of the outer encoder disk">0.0</param>
+<param name="inner_encoder_diameter" type="float" min="0.0" max="1000.0" _gui-text="Diameter of the inner encoder disk">0.0</param>
+<effect>
+<object-type>all</object-type>
+<effects-menu>
+<submenu _name="Optical Encoder Disk" />
+</effects-menu>
+</effect>
+<script>
+<command reldir="extensions" interpreter="python">encoder_disk_generator.py</command>
+</script>
+</inkscape-extension>
