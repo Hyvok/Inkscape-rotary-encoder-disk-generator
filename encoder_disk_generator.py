@@ -1,9 +1,34 @@
-#!/usr/bin/env python 
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 
-import inkex
-import cubicsuperpath, simplestyle
+import inkex, gettext
+import cubicsuperpath, simplestyle, math
+_ = gettext.gettext
+
+# Function for calculating a point when you know the distance and the angle
+# from the origin
+def calculatePoint(angle, distance):
+	if angle < 0.0 or angle > 360.0:
+		return None
+	if angle == 0.0 or 360.0:
+		return [distance, 0.0]
+	if angle == 90.0:
+		return [0.0, distance]
+	if angle == 180.0:
+		return [-distance, 0.0]
+	if angle == 270.0:
+		return [0.0, -distance]
+	if angle < 90.0 and angle > 0.0:
+		return [distance*math.cos(math.radians(angle)), distance*math.sin(math.radians(angle))]
+	if angle > 90.0 and angle < 180.0:
+		return [-(distance*math.cos(math.radians(angle))), distance*math.sin(math.radians(angle))]
+	if angle > 180.0 and angle < 270.0:
+		return [-(distance*math.cos(math.radians(angle))), -(distance*math.sin(math.radians(angle)))]
+	if angle > 270.0 and angle < 360.0:
+		return [distance*math.cos(math.radians(angle)), -(distance*math.sin(math.radians(angle)))]
 
 class EncoderDiskGenerator(inkex.Effect):
+		
 	def __init__(self):
 		inkex.Effect.__init__(self)
 		self.OptionParser.add_option("--diameter",
@@ -45,21 +70,34 @@ class EncoderDiskGenerator(inkex.Effect):
 			'style'     : simplestyle.formatStyle({'stroke':'none', 'fill':'#000000'}),
 			'r'         : str(self.options.hole_diameter/2.0)
 		}
-		self.current_layer.append(inkex.etree.SubElement(group, inkex.addNS('circle','svg'), attributes ))
+		self.current_layer.append(inkex.etree.SubElement(group, inkex.addNS('circle','svg'), attributes))
 
 		# Attributes for the guide hole in the center hole, then create it
 		attributes = {
 			'style'     : simplestyle.formatStyle({'stroke':'white','fill':'white'}),
 			'r'         : '1'
 		}
-		self.current_layer.append(inkex.etree.SubElement(group, inkex.addNS('circle','svg'), attributes ))
+		self.current_layer.append(inkex.etree.SubElement(group, inkex.addNS('circle','svg'), attributes))
 
 		# Attributes for the outer rim, then create it
 		attributes = {
 			'style'     : simplestyle.formatStyle({'stroke':'black', 'stroke-width':'1', 'fill':'none'}),
 			'r'         : str(self.options.diameter/2.0)
 		}
-		self.current_layer.append(inkex.etree.SubElement(group, inkex.addNS('circle','svg'), attributes ))
+		self.current_layer.append(inkex.etree.SubElement(group, inkex.addNS('circle','svg'), attributes))
+
+		point = calculatePoint(0.0, self.options.outer_encoder_diameter-self.options.outer_encoder_width)
+
+		# Line style for the encoder segments
+		line_style   = { 'stroke':'black',
+				         'stroke-width':'1',
+				         'fill':'black'
+				       }
+
+		line_attribs = {'style' : simplestyle.formatStyle(line_style),
+				        'd' : 'M '+str(0.0)+' '+str(0.0)+' L '+str(point[0])+' '+str(point[1])+ ' z '}
+
+		self.current_layer.append(inkex.etree.SubElement(group, inkex.addNS('path','svg'), line_attribs ))
 
 if __name__ == '__main__':
 	# Run the effect
