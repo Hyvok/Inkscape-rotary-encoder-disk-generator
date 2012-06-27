@@ -10,22 +10,22 @@ _ = gettext.gettext
 def calculatePoint(angle, distance):
 	if angle < 0.0 or angle > 360.0:
 		return None
-	if angle == 0.0 or 360.0:
+	if angle == 0.0 or angle == 360.0:
 		return [distance, 0.0]
 	if angle == 90.0:
 		return [0.0, distance]
 	if angle == 180.0:
-		return [-distance, 0.0]
+		return [-1.0*distance, 0.0]
 	if angle == 270.0:
-		return [0.0, -distance]
-	if angle < 90.0 and angle > 0.0:
+		return [0.0, -1.0*distance]
+	if angle < 90.0:
 		return [distance*math.cos(math.radians(angle)), distance*math.sin(math.radians(angle))]
 	if angle > 90.0 and angle < 180.0:
-		return [-(distance*math.cos(math.radians(angle))), distance*math.sin(math.radians(angle))]
+		return [-1.0*(distance*math.cos(math.radians(angle))), distance*math.sin(math.radians(angle))]
 	if angle > 180.0 and angle < 270.0:
-		return [-(distance*math.cos(math.radians(angle))), -(distance*math.sin(math.radians(angle)))]
+		return [-1.0*(distance*math.cos(math.radians(angle))), -1.0*(distance*math.sin(math.radians(angle)))]
 	if angle > 270.0 and angle < 360.0:
-		return [distance*math.cos(math.radians(angle)), -(distance*math.sin(math.radians(angle)))]
+		return [distance*math.cos(math.radians(angle)), -1.0*(distance*math.sin(math.radians(angle)))]
 
 class EncoderDiskGenerator(inkex.Effect):
 		
@@ -86,18 +86,41 @@ class EncoderDiskGenerator(inkex.Effect):
 		}
 		self.current_layer.append(inkex.etree.SubElement(group, inkex.addNS('circle','svg'), attributes))
 
-		point = calculatePoint(0.0, self.options.outer_encoder_diameter-self.options.outer_encoder_width)
-
 		# Line style for the encoder segments
 		line_style   = { 'stroke':'black',
 				         'stroke-width':'1',
 				         'fill':'black'
 				       }
 
-		line_attribs = {'style' : simplestyle.formatStyle(line_style),
-				        'd' : 'M '+str(0.0)+' '+str(0.0)+' L '+str(point[0])+' '+str(point[1])+ ' z '}
+		line_attributes = {'style' : simplestyle.formatStyle(line_style)}
 
-		self.current_layer.append(inkex.etree.SubElement(group, inkex.addNS('path','svg'), line_attribs ))
+		for segment in range(0, self.options.segments, 3):
+			# Go to the first point in the segment
+			point = calculatePoint(segment*(360.0/self.options.segments), (self.options.outer_encoder_diameter/2)-self.options.outer_encoder_width)
+			line_attributes['d'] = 'M '+str(point[0])+' '+str(point[1])
+
+			# Go to the second point in the segment
+			point = calculatePoint(segment*(360.0/self.options.segments), (self.options.outer_encoder_diameter/2))
+			line_attributes['d'] += ' L '+ str(point[0])+' '+str(point[1])
+
+			# Go to the third point in the segment
+			point = calculatePoint(((segment+1)*(360.0/self.options.segments)), (self.options.outer_encoder_diameter/2))
+			line_attributes['d'] += ' L '+ str(point[0])+' '+str(point[1])
+
+			inkex.errormsg(_("Point =" + str(point))+ " Angle =" + str(((segment+1)*(360.0/self.options.segments))))
+
+			# Go to the fourth point in the segment
+			point = calculatePoint(((segment+1)*(360.0/self.options.segments)), (self.options.outer_encoder_diameter/2)-self.options.outer_encoder_width)
+			line_attributes['d'] += ' L '+ str(point[0])+' '+str(point[1])
+
+			# 'z' closes the path
+			line_attributes['d'] += ' z'
+
+			# Add the path to the document
+			self.current_layer.append(inkex.etree.SubElement(group, inkex.addNS('path','svg'), line_attributes ))
+
+			line_attributes['d'] = ''
+
 
 if __name__ == '__main__':
 	# Run the effect
