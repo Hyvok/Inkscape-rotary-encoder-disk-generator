@@ -22,32 +22,39 @@ class EncoderDiskGenerator(inkex.Effect):
 				        action="store", type="float", 
 				        dest="outer_encoder_diameter", default=0.0,
 				        help="Diameter of the outer encoder disk")
+		self.OptionParser.add_option("--outer_encoder_width",
+				        action="store", type="float", 
+				        dest="outer_encoder_width", default=0.0,
+				        help="Width of the outer encoder disk")
 		self.OptionParser.add_option("--inner_encoder_diameter",
 				        action="store", type="float", 
 				        dest="inner_encoder_diameter", default=0.0,
 				        help="Diameter of the inner encoder disk")
+		self.OptionParser.add_option("--inner_encoder_width",
+				        action="store", type="float", 
+				        dest="inner_encoder_width", default=0.0,
+				        help="Width of the inner encoder disk")
 
 	def effect(self):
 
 		# Group to put all the elements in, center set in the middle of the view
 		group = inkex.etree.SubElement(self.current_layer, 'g', {inkex.addNS('label', 'inkscape'):'Encoder disk', 											'transform':'translate' + str(self.view_center)})
 
-		# Attributes for the center hole
+		# Attributes for the center hole, then create it
 		attributes = {
 			'style'     : simplestyle.formatStyle({'stroke':'none', 'fill':'#000000'}),
 			'r'         : str(self.options.hole_diameter/2.0)
 		}
 		self.current_layer.append(inkex.etree.SubElement(group, inkex.addNS('circle','svg'), attributes ))
 
-		# Attributes for the guide hole in the center hole
+		# Attributes for the guide hole in the center hole, then create it
 		attributes = {
 			'style'     : simplestyle.formatStyle({'stroke':'white','fill':'white'}),
 			'r'         : '1'
 		}
-		# Add center circle to the document
 		self.current_layer.append(inkex.etree.SubElement(group, inkex.addNS('circle','svg'), attributes ))
 
-		# Attributes for the outer rim
+		# Attributes for the outer rim, then create it
 		attributes = {
 			'style'     : simplestyle.formatStyle({'stroke':'black', 'stroke-width':'1', 'fill':'none'}),
 			'r'         : str(self.options.diameter/2.0)
@@ -55,5 +62,6 @@ class EncoderDiskGenerator(inkex.Effect):
 		self.current_layer.append(inkex.etree.SubElement(group, inkex.addNS('circle','svg'), attributes ))
 
 if __name__ == '__main__':
+	# Run the effect
 	effect = EncoderDiskGenerator()
 	effect.affect()
