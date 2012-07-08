@@ -121,9 +121,13 @@ class EncoderDiskGenerator(inkex.Effect):
 				         'fill':'black'
 				       }
 
-
 		for segment in range(0, self.options.segments, 2):
 			self.current_layer.append(inkex.etree.SubElement(group, inkex.addNS('path', 'svg'), self.drawSegment(line_style, segment*(360.0/self.options.segments), 360.0/self.options.segments, self.options.outer_encoder_diameter, self.options.outer_encoder_width)))
+
+		if self.options.inner_encoder_diameter > 0.0:
+			for segment in range(0, self.options.segments, 2):
+				self.current_layer.append(inkex.etree.SubElement(group, inkex.addNS('path', 'svg'), self.drawSegment(line_style, segment*(360.0/self.options.segments)+((360.0/self.options.segments)/2.0), 360.0/self.options.segments, self.options.inner_encoder_diameter, self.options.inner_encoder_width)))
+
 
 
 if __name__ == '__main__':
