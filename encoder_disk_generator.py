@@ -18,13 +18,7 @@ def calculatePoint(angle, distance):
 		return [-1.0*distance, 0.0]
 	elif angle == 270.0:
 		return [0.0, -1.0*distance]
-	elif angle < 90.0:
-		return [distance*math.cos(math.radians(angle)), distance*math.sin(math.radians(angle))]
-	elif angle > 90.0 and angle < 180.0:
-		return [distance*math.cos(math.radians(angle)), distance*math.sin(math.radians(angle))]
-	elif angle > 180.0 and angle < 270.0:
-		return [distance*math.cos(math.radians(angle)), distance*math.sin(math.radians(angle))]
-	elif angle > 270.0 and angle < 360.0:
+	else:
 		return [distance*math.cos(math.radians(angle)), distance*math.sin(math.radians(angle))]
 
 class EncoderDiskGenerator(inkex.Effect):
@@ -60,6 +54,34 @@ class EncoderDiskGenerator(inkex.Effect):
 				        dest="inner_encoder_width", default=0.0,
 				        help="Width of the inner encoder disk")
 
+	def drawSegment(self, line_style, angle, segment_angle, outer_diameter, width):
+
+		line_attributes = {'style' : simplestyle.formatStyle(line_style)}
+
+		# Go to the first point in the segment
+		point = calculatePoint(angle, (outer_diameter-width)/2.0)
+		line_attributes['d'] = 'M '+str(point[0])+' '+str(point[1])
+
+		# Go to the second point in the segment
+		point = calculatePoint(angle, outer_diameter/2.0)
+		line_attributes['d'] += ' '+ str(point[0])+' '+str(point[1])
+
+		# Go to the third point in the segment
+		point = calculatePoint(angle+segment_angle, outer_diameter/2.0)
+		line_attributes['d'] += ' '+ str(point[0])+' '+str(point[1])
+
+		# Go to the fourth point in the segment
+		point = calculatePoint(angle+segment_angle,(outer_diameter-width)/2.0)
+		line_attributes['d'] += ' '+ str(point[0])+' '+str(point[1])
+
+		# 'z' closes the path
+		line_attributes['d'] += ' Z'
+
+		#inkex.errormsg(_("Data = " + str(line_attributes['d'])))
+
+		# Add the path to the document
+		return line_attributes
+
 	def effect(self):
 
 		# Group to put all the elements in, center set in the middle of the view
@@ -94,32 +116,8 @@ class EncoderDiskGenerator(inkex.Effect):
 
 		line_attributes = {'style' : simplestyle.formatStyle(line_style)}
 
-		for segment in range(0, 54, 3):
-			# Go to the first point in the segment
-			point = calculatePoint(segment*(360.0/self.options.segments), (self.options.outer_encoder_diameter/2.0)-self.options.outer_encoder_width)
-			line_attributes['d'] = 'M '+str(point[0])+' '+str(point[1])
-
-			# Go to the second point in the segment
-			point = calculatePoint(segment*(360.0/self.options.segments), (self.options.outer_encoder_diameter/2.0))
-			line_attributes['d'] += ' '+ str(point[0])+' '+str(point[1])
-
-			# Go to the third point in the segment
-			point = calculatePoint(((segment+1)*(360.0/self.options.segments)), (self.options.outer_encoder_diameter/2.0))
-			line_attributes['d'] += ' '+ str(point[0])+' '+str(point[1])
-
-			# Go to the fourth point in the segment
-			point = calculatePoint(((segment+1)*(360.0/self.options.segments)), (self.options.outer_encoder_diameter/2.0)-self.options.outer_encoder_width)
-			line_attributes['d'] += ' '+ str(point[0])+' '+str(point[1])
-
-			# 'z' closes the path
-			line_attributes['d'] += ' Z'
-
-			inkex.errormsg(_("Data = " + str(line_attributes['d'])))
-
-			# Add the path to the document
-			self.current_layer.append(inkex.etree.SubElement(group, inkex.addNS('path','svg'), line_attributes ))
-
-			line_attributes['d'] = ''
+		for segment in range(0, self.options.segments, 2):
+			self.current_layer.append(inkex.etree.SubElement(group, inkex.addNS('path', 'svg'), self.drawSegment(line_style, segment*(360.0/self.options.segments), 360.0/self.options.segments, self.options.outer_encoder_diameter, self.options.outer_encoder_width)))
 
 
 if __name__ == '__main__':
