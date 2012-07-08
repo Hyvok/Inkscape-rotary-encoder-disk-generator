@@ -64,17 +64,24 @@ class EncoderDiskGenerator(inkex.Effect):
 
 		# Go to the second point in the segment
 		point = calculatePoint(angle, outer_diameter/2.0)
-		line_attributes['d'] += ' '+ str(point[0])+' '+str(point[1])
+		line_attributes['d'] += ' L '+ str(point[0])+' '+str(point[1])
 
-		# Go to the third point in the segment
+		# Go to the third point in the segment, draw an arc
 		point = calculatePoint(angle+segment_angle, outer_diameter/2.0)
-		line_attributes['d'] += ' '+ str(point[0])+' '+str(point[1])
+		control_point = calculatePoint(angle+(segment_angle/2.0), (outer_diameter/2.0)/(math.cos(math.radians(segment_angle/2.0))))
+		line_attributes['d'] += ' Q '+ str(control_point[0]) + ',' + str(control_point[1]) + ' ' + str(point[0])+','+str(point[1])
 
 		# Go to the fourth point in the segment
 		point = calculatePoint(angle+segment_angle,(outer_diameter-width)/2.0)
-		line_attributes['d'] += ' '+ str(point[0])+' '+str(point[1])
+		line_attributes['d'] += ' L '+ str(point[0])+' '+str(point[1])
 
-		# 'z' closes the path
+		# Go to the beginning in the segment, draw an arc
+		point = calculatePoint(angle, (outer_diameter-width)/2.0)
+		control_point = calculatePoint(angle+(segment_angle/2.0), ((outer_diameter-width)/2.0)/(math.cos(math.radians(segment_angle/2.0))))
+		line_attributes['d'] += ' Q '+ str(control_point[0]) + ',' + str(control_point[1]) + ' ' + str(point[0])+','+str(point[1])
+
+
+		# 'Z' closes the path
 		line_attributes['d'] += ' Z'
 
 		#inkex.errormsg(_("Data = " + str(line_attributes['d'])))
@@ -85,7 +92,7 @@ class EncoderDiskGenerator(inkex.Effect):
 	def effect(self):
 
 		# Group to put all the elements in, center set in the middle of the view
-		group = inkex.etree.SubElement(self.current_layer, 'g', {inkex.addNS('label', 'inkscape'):'Encoder disk', 											'transform':'translate' + str(self.view_center)})
+		group = inkex.etree.SubElement(self.current_layer, 'g', {inkex.addNS('label', 'inkscape'):'Encoder disk', 'transform':'translate' + str(self.view_center)})
 
 		# Attributes for the center hole, then create it
 		attributes = {
@@ -114,7 +121,6 @@ class EncoderDiskGenerator(inkex.Effect):
 				         'fill':'black'
 				       }
 
-		line_attributes = {'style' : simplestyle.formatStyle(line_style)}
 
 		for segment in range(0, self.options.segments, 2):
 			self.current_layer.append(inkex.etree.SubElement(group, inkex.addNS('path', 'svg'), self.drawSegment(line_style, segment*(360.0/self.options.segments), 360.0/self.options.segments, self.options.outer_encoder_diameter, self.options.outer_encoder_width)))
