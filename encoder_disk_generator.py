@@ -3,8 +3,6 @@
 
 import inkex, sys
 import simplestyle, math
-import gettext
-_ = gettext.gettext
 
 # Function for calculating a point from the origin when you know the distance 
 # and the angle
