@@ -69,9 +69,8 @@ class EncoderDiskGenerator(inkex.Effect):
 
 		# Go to the third point in the segment, draw an arc
 		point = calculatePoint(angle+segment_angle, outer_radius)
-		control_point_distance_to_origin = outer_radius/(math.cos(math.radians(segment_angle/2)))
-		control_point = calculatePoint(angle+(segment_angle/2), control_point_distance_to_origin)
-		path['d'] += self.parsePathData('Q', control_point) + self.parsePathData(' ', point)
+		path['d'] += self.parsePathData('A', [outer_radius, outer_radius]) + \
+					'0 0 1' + self.parsePathData(' ', point)
 
 		# Go to the fourth point in the segment
 		point = calculatePoint(angle+segment_angle, outer_radius-width)
@@ -79,10 +78,9 @@ class EncoderDiskGenerator(inkex.Effect):
 
 		# Go to the beginning in the segment, draw an arc
 		point = calculatePoint(angle, outer_radius-width)
-		control_point_distance_to_origin = (outer_radius-width)/(math.cos(math.radians(segment_angle/2)))
-		control_point = calculatePoint(angle+(segment_angle/2), control_point_distance_to_origin)
 		# 'Z' closes the path
-		path['d'] += self.parsePathData('Q', control_point) + self.parsePathData(' ', point) + ' Z'
+		path['d'] += self.parsePathData('A', [outer_radius-width, outer_radius-width])\
+					 + '0 0 0' + self.parsePathData(' ', point) + ' Z'
 
 		# Return the path
 		return path
@@ -135,7 +133,6 @@ class EncoderDiskGenerator(inkex.Effect):
 			angle = segment_number*segment_angle
 			segment = self.drawSegment(line_style, angle, segment_angle,
 				self.options.outer_encoder_diameter, self.options.outer_encoder_width)
-			inkex.errormsg('Outer segment data: ' + segment['d'])
 			self.addElement('path', group, segment)
 
 			# If the inner encoder diameter is something else than 0; create it
@@ -143,7 +140,6 @@ class EncoderDiskGenerator(inkex.Effect):
 				# The inner encoder must be half an encoder segment ahead of the outer one
 				segment = self.drawSegment(line_style, angle+(segment_angle/2), segment_angle,
 					self.options.inner_encoder_diameter, self.options.inner_encoder_width)
-				inkex.errormsg('Inner segment data: ' + segment['d'])
 				self.addElement('path', group, segment)
 
 if __name__ == '__main__':
