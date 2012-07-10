@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import inkex, sys
+import inkex
 import simplestyle, math
 
 # Function for calculating a point from the origin when you know the distance 
