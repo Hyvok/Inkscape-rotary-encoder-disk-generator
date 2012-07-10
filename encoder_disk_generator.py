@@ -127,10 +127,12 @@ class EncoderDiskGenerator(inkex.Effect):
 		}
 
 		# Angle of one single segment
-		segment_angle = 360.0/self.options.segments
+		segment_angle = 360.0/(self.options.segments*2)
 
-		for segment_number in range(0, self.options.segments, 2):
-			angle = segment_number*segment_angle
+		for segment_number in range(0, self.options.segments):
+
+			angle = segment_number*(segment_angle*2)
+
 			segment = self.drawSegment(line_style, angle, segment_angle,
 				self.options.outer_encoder_diameter, self.options.outer_encoder_width)
 			self.addElement('path', group, segment)
