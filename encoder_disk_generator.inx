@@ -6,7 +6,7 @@
 <dependency type="executable" location="extensions">encoder_disk_generator.py</dependency>
 <param name="diameter" type="float" min="0.0" max="1000.0" _gui-text="Diameter of the encoder disk">0.0</param>
 <param name="hole_diameter" type="float" min="0.0" max="1000.0" _gui-text="Diameter of the center hole">0.0</param>
-<param name="segments" type="int" min="0" max="10000" _gui-text="Number of segments">0</param>
+<param name="segments" type="int" min="1" max="10000" _gui-text="Number of segments">1</param>
 <param name="outer_encoder_diameter" type="float" min="0.0" max="1000.0" _gui-text="Diameter of the outer encoder disk">0.0</param>
 <param name="outer_encoder_width" type="float" min="0.0" max="1000.0" _gui-text="Width of the outer encoder disk">0.0</param>
 <param name="inner_encoder_diameter" type="float" min="0.0" max="1000.0" _gui-text="Diameter of the inner encoder disk">0.0</param>
