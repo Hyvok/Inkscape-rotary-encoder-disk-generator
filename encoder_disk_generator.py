@@ -1,8 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import inkex
+import inkex, sys
 import simplestyle, math
+import gettext
+_ = gettext.gettext
 
 # Function for calculating a point from the origin when you know the distance 
 # and the angle
@@ -49,7 +51,7 @@ class EncoderDiskGenerator(inkex.Effect):
 	# This function just concatenates the point and the command and returns
 	# the data string
 	def parsePathData(self, command, point):
-		path_data = command + ' ' + str(point[0]) + ' ' + str(point[1]) + ' '
+		path_data = command + ' %f ' %point[0] + ' %f ' %point[1] 
 		return path_data
 
 	# This function creates the path for one single segment
@@ -80,7 +82,7 @@ class EncoderDiskGenerator(inkex.Effect):
 		control_point_distance_to_origin = (outer_radius-width)/(math.cos(math.radians(segment_angle/2)))
 		control_point = calculatePoint(angle+(segment_angle/2), control_point_distance_to_origin)
 		# 'Z' closes the path
-		path['d'] += self.parsePathData('Q', point) + self.parsePathData(' ', point) + ' Z'
+		path['d'] += self.parsePathData('Q', control_point) + self.parsePathData(' ', point) + ' Z'
 
 		# Return the path
 		return path
@@ -133,13 +135,15 @@ class EncoderDiskGenerator(inkex.Effect):
 			angle = segment_number*segment_angle
 			segment = self.drawSegment(line_style, angle, segment_angle,
 				self.options.outer_encoder_diameter, self.options.outer_encoder_width)
+			inkex.errormsg('Outer segment data: ' + segment['d'])
 			self.addElement('path', group, segment)
 
 			# If the inner encoder diameter is something else than 0; create it
 			if self.options.inner_encoder_diameter > 0:
 				# The inner encoder must be half an encoder segment ahead of the outer one
-				segment = self.drawSegment(line_style, angle+segment_angle/2, segment_angle,
+				segment = self.drawSegment(line_style, angle+(segment_angle/2), segment_angle,
 					self.options.inner_encoder_diameter, self.options.inner_encoder_width)
+				inkex.errormsg('Inner segment data: ' + segment['d'])
 				self.addElement('path', group, segment)
 
 if __name__ == '__main__':
