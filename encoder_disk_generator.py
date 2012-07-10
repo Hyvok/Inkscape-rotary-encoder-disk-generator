@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import inkex
-import cubicsuperpath, simplestyle, math
+import simplestyle, math
 
 # Function for calculating a point from the origin when you know the distance 
 # and the angle
@@ -46,12 +46,13 @@ class EncoderDiskGenerator(inkex.Effect):
 				        dest="inner_encoder_width", default=0.0,
 				        help="Width of the inner encoder disk")
 
+	# This function just concatenates the point and the command and returns
+	# the data string
 	def parsePathData(self, command, point):
-		path_data = command + ' '
-
-		path_data += str(point[0]) + ' ' + str(point[1]) + ' '
+		path_data = command + ' ' + str(point[0]) + ' ' + str(point[1]) + ' '
 		return path_data
 
+	# This function creates the path for one single segment
 	def drawSegment(self, line_style, angle, segment_angle, outer_diameter, width):
 
 		path = {'style' : simplestyle.formatStyle(line_style)}
@@ -59,12 +60,10 @@ class EncoderDiskGenerator(inkex.Effect):
 		outer_radius = outer_diameter/2
 
 		# Go to the first point in the segment
-		point = calculatePoint(angle, outer_radius-width)
-		path['d'] += self.parsePathData('M', point)
+		path['d'] += self.parsePathData('M', calculatePoint(angle, outer_radius-width))
 
 		# Go to the second point in the segment
-		point = calculatePoint(angle, outer_radius)
-		path['d'] += self.parsePathData('L', point)
+		path['d'] += self.parsePathData('L', calculatePoint(angle, outer_radius))
 
 		# Go to the third point in the segment, draw an arc
 		point = calculatePoint(angle+segment_angle, outer_radius)
@@ -86,6 +85,7 @@ class EncoderDiskGenerator(inkex.Effect):
 		# Return the path
 		return path
 
+	# This function adds an element to the document
 	def addElement(self, element_type, group, element_attributes):
 		self.current_layer.append(inkex.etree.SubElement(group, 
 		inkex.addNS(element_type,'svg'), element_attributes))
@@ -126,6 +126,7 @@ class EncoderDiskGenerator(inkex.Effect):
 			'fill'			:	'black'
 		}
 
+		# Angle of one single segment
 		segment_angle = 360.0/self.options.segments
 
 		for segment_number in range(0, self.options.segments, 2):
@@ -134,6 +135,7 @@ class EncoderDiskGenerator(inkex.Effect):
 				self.options.outer_encoder_diameter, self.options.outer_encoder_width)
 			self.addElement('path', group, segment)
 
+			# If the inner encoder diameter is something else than 0; create it
 			if self.options.inner_encoder_diameter > 0:
 				# The inner encoder must be half an encoder segment ahead of the outer one
 				segment = self.drawSegment(line_style, angle+segment_angle/2, segment_angle,
