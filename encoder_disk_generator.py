@@ -98,12 +98,14 @@ class EncoderDiskGenerator(inkex.Effect):
 			'transform':'translate' + str(self.view_center)
 		})
 
-		# Attributes for the center hole, then create it
+		# Attributes for the center hole, then create it, if diameter is 0, dont
+		# create it
 		attributes = {
 			'style'     : simplestyle.formatStyle({'stroke':'none', 'fill':'black'}),
 			'r'         : str(self.options.hole_diameter/2)
 		}
-		self.addElement('circle', group, attributes)
+		if self.options.hole_diameter > 0:
+			self.addElement('circle', group, attributes)
 
 		# Attributes for the guide hole in the center hole, then create it
 		attributes = {
@@ -117,7 +119,8 @@ class EncoderDiskGenerator(inkex.Effect):
 			'style'     : simplestyle.formatStyle({'stroke':'black', 'stroke-width':'1', 'fill':'none'}),
 			'r'         : str(self.options.diameter/2)
 		}
-		self.addElement('circle', group, attributes)
+		if self.options.diameter > 0:
+			self.addElement('circle', group, attributes)
 
 		# Line style for the encoder segments
 		line_style   = { 
@@ -133,12 +136,19 @@ class EncoderDiskGenerator(inkex.Effect):
 
 			angle = segment_number*(segment_angle*2)
 
-			segment = self.drawSegment(line_style, angle, segment_angle,
-				self.options.outer_encoder_diameter, self.options.outer_encoder_width)
-			self.addElement('path', group, segment)
+			if 	self.options.outer_encoder_width > 0 and \
+				self.options.outer_encoder_diameter > 0 and \
+				self.options.outer_encoder_diameter/2 > self.options.outer_encoder_width:
+
+				segment = self.drawSegment(line_style, angle, segment_angle,
+					self.options.outer_encoder_diameter, self.options.outer_encoder_width)
+				self.addElement('path', group, segment)
 
 			# If the inner encoder diameter is something else than 0; create it
-			if self.options.inner_encoder_diameter > 0:
+			if 	self.options.outer_encoder_width > 0 and \
+				self.options.inner_encoder_diameter > 0 and \
+				self.options.inner_encoder_diameter/2 > self.options.inner_encoder_width:
+
 				# The inner encoder must be half an encoder segment ahead of the outer one
 				segment = self.drawSegment(line_style, angle+(segment_angle/2), segment_angle,
 					self.options.inner_encoder_diameter, self.options.inner_encoder_width)
