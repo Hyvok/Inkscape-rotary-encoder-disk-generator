@@ -55,13 +55,14 @@ class EncoderDiskGenerator(inkex.Effect):
 	# This function creates a gray code of size n (n >= 1) in the format of a list
 	def createGrayCode(self, n):
 
-		if n == 1:
-			return [[False], [True]]
-
 		gray_code = [[False], [True]]
+
+		if n == 1:
+			return gray_code
 
 		for i in range(n-1):
 			temp = []
+			# Reflect values
 			for j in range(len(gray_code[0]), 0, -1):
 				for k in range(0, len(gray_code)):
 					if j == len(gray_code[0]):
@@ -70,6 +71,7 @@ class EncoderDiskGenerator(inkex.Effect):
 						temp[k].append(gray_code[k][-j])
 			while temp:
 				gray_code.append(temp.pop())
+			# Add False to the "old" values and true to the new ones
 			for j in range(0, len(gray_code)):
 				if j < len(gray_code)/2:
 					gray_code[j].insert(0, False)
@@ -157,8 +159,45 @@ class EncoderDiskGenerator(inkex.Effect):
 		# Angle of one single segment
 		segment_angle = 360.0/(self.options.segments*2)
 
-		inkex.errormsg("Gray code: " +str(self.createGrayCode(4)))
+		gray_code_bits = 4
+		gray_code = self.createGrayCode(gray_code_bits)
+		inkex.errormsg(gray_code)
 
+		segment_size = 0
+		start_angle_position = 0
+		index = 0
+		previous_item = False
+		encoder_diameter = 100.0
+		for i in range(len(gray_code[0])):
+			inkex.errormsg("Bit: " + str(i))
+			for j in gray_code:
+				if j[i] == True:
+					segment_size += 1
+					if segment_size == 1:
+						start_angle_position = index
+					previous_item = True
+				elif j[i] == False and previous_item == True:
+					segment = self.drawSegment(line_style, start_angle_position*(360.0/(2**gray_code_bits)), segment_size*(360.0/(2**gray_code_bits)), encoder_diameter, self.options.outer_encoder_width)
+					self.addElement('path', group, segment)
+					inkex.errormsg("Segment size: " +str(segment_size) + " start angle position: " + str(start_angle_position))
+					segment_size = 0
+					previous_item = False
+					start_angle_position = 0
+				index += 1
+
+			if previous_item == True:
+				segment = self.drawSegment(line_style, start_angle_position*(360.0/(2**gray_code_bits)), segment_size*(360.0/(2**gray_code_bits)), self.options.outer_encoder_diameter, self.options.outer_encoder_width)
+				self.addElement('path', group, segment)
+				inkex.errormsg("Segment size: " +str(segment_size) + " start angle position: " + str(start_angle_position))
+				segment_size = 0
+				previous_item = False
+				start_angle_position = 0
+			encoder_diameter += 40
+			index = 0
+					
+
+		#inkex.errormsg("Gray code: " +str(self.createGrayCode(4)))
+"""
 		for segment_number in range(0, self.options.segments):
 
 			angle = segment_number*(segment_angle*2)
@@ -180,7 +219,7 @@ class EncoderDiskGenerator(inkex.Effect):
 				segment = self.drawSegment(line_style, angle+(segment_angle/2), segment_angle,
 					self.options.inner_encoder_diameter, self.options.inner_encoder_width)
 				self.addElement('path', group, segment)
-
+"""
 if __name__ == '__main__':
 	# Run the effect
 	effect = EncoderDiskGenerator()
