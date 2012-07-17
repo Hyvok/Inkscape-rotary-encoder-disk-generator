@@ -1,6 +1,6 @@
 Inkscape rotary encoder generator is an extension for Inkscape (http://inkscape.org/) which enables you to create
-optical rotary encoder discs fast and efficiently. It currently supports creating single and two-track (quadrature) encoders.
-I am in the process of adding support for gray encoded discs as well. 
+optical rotary encoder discs fast and efficiently. It currently supports creating single and two-track (quadrature) encoders 
+and gray encoders.
 
 More details in my blog http://www.dgkelectronics.com/inkscape-extension-for-creating-optical-rotary-encoder-discs
 
