@@ -4,13 +4,25 @@
 <id>dgkelectronics.com.encoder.disk.generator</id>
 <dependency type="executable" location="extensions">inkex.py</dependency>
 <dependency type="executable" location="extensions">encoder_disk_generator.py</dependency>
-<param name="diameter" type="float" min="0.0" max="1000.0" _gui-text="Diameter of the encoder disk">0.0</param>
-<param name="hole_diameter" type="float" min="0.0" max="1000.0" _gui-text="Diameter of the center hole">0.0</param>
-<param name="segments" type="int" min="1" max="10000" _gui-text="Number of segments">1</param>
-<param name="outer_encoder_diameter" type="float" min="0.0" max="1000.0" _gui-text="Diameter of the outer encoder disk">0.0</param>
-<param name="outer_encoder_width" type="float" min="0.0" max="1000.0" _gui-text="Width of the outer encoder disk">0.0</param>
-<param name="inner_encoder_diameter" type="float" min="0.0" max="1000.0" _gui-text="Diameter of the inner encoder disk">0.0</param>
-<param name="inner_encoder_width" type="float" min="0.0" max="1000.0" _gui-text="Width of the inner encoder disk">0.0</param>
+<param name="tab" type="notebook">  
+    <page name="rotary_enc" _gui-text="Rotary encoder">
+		<param name="diameter" type="float" min="0.0" max="1000.0" _gui-text="Diameter of the encoder disk">0.0</param>
+		<param name="hole_diameter" type="float" min="0.0" max="1000.0" _gui-text="Diameter of the center hole">0.0</param>
+		<param name="segments" type="int" min="1" max="10000" _gui-text="Number of segments">1</param>
+		<param name="outer_encoder_diameter" type="float" min="0.0" max="1000.0" _gui-text="Diameter of the outer encoder disk">0.0</param>
+		<param name="outer_encoder_width" type="float" min="0.0" max="1000.0" _gui-text="Width of the outer encoder disk">0.0</param>
+		<param name="inner_encoder_diameter" type="float" min="0.0" max="1000.0" _gui-text="Diameter of the inner encoder disk">0.0</param>
+		<param name="inner_encoder_width" type="float" min="0.0" max="1000.0" _gui-text="Width of the inner encoder disk">0.0</param>
+    </page>
+    <page name="brgc" _gui-text="Gray encoder (BRGC)">
+		<param name="diameter" type="float" min="0.0" max="1000.0" _gui-text="Diameter of the encoder disk">0.0</param>
+		<param name="hole_diameter" type="float" min="0.0" max="1000.0" _gui-text="Diameter of the center hole">0.0</param>
+		<param name="bits" type="int" min="1" max="10" _gui-text="Number of bits/tracks">1</param>
+		<param name="encoder_diameter" type="float" min="0.0" max="1000.0" _gui-text="Outer diameter of the last track">0.0</param>
+		<param name="track_width" type="float" min="0.0" max="1000.0" _gui-text="Width of one track">0.0</param>
+		<param name="track_distance" type="float" min="0.0" max="1000.0" _gui-text="Distance between tracks">0.0</param>
+    </page>
+ </param>
 <effect>
 <object-type>all</object-type>
 <effects-menu>

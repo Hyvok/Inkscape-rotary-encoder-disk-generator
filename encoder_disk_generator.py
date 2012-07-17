@@ -45,6 +45,22 @@ class EncoderDiskGenerator(inkex.Effect):
 				        action="store", type="float", 
 				        dest="inner_encoder_width", default=0.0,
 				        help="Width of the inner encoder disk")
+		self.OptionParser.add_option("--bits",
+				        action="store", type="int", 
+				        dest="bits", default=1,
+				        help="Number of bits/tracks")
+		self.OptionParser.add_option("--encoder_diameter",
+				        action="store", type="float", 
+				        dest="encoder_diameter", default=0.0,
+				        help="Outer diameter of the last track")
+		self.OptionParser.add_option("--track_width",
+				        action="store", type="float", 
+				        dest="track_width", default=0.0,
+				        help="Width of one track")
+		self.OptionParser.add_option("--track_distance",
+				        action="store", type="float", 
+				        dest="track_distance", default=0.0,
+				        help="Distance between tracks")
 
 	# This function just concatenates the point and the command and returns
 	# the data string
@@ -52,15 +68,15 @@ class EncoderDiskGenerator(inkex.Effect):
 		path_data = command + ' %f ' %point[0] + ' %f ' %point[1] 
 		return path_data
 	
-	# This function creates a gray code of size n (n >= 1) in the format of a list
-	def createGrayCode(self, n):
+	# This function creates a gray code of size bits (n >= 1) in the format of a list
+	def createGrayCode(self, bits):
 
 		gray_code = [[False], [True]]
 
-		if n == 1:
+		if bits == 1:
 			return gray_code
 
-		for i in range(n-1):
+		for i in range(bits-1):
 			temp = []
 			# Reflect values
 			for j in range(len(gray_code[0]), 0, -1):
@@ -80,6 +96,39 @@ class EncoderDiskGenerator(inkex.Effect):
 			temp = []
 
 		return gray_code
+
+	def drawGrayEncoder(self, bits, encoder_diameter, track_width, track_distance):
+		gray_code = self.createGrayCode(bits)
+
+		segments = []
+		segment_size = 0
+		start_angle_position = 0
+		index = 0
+		current_encoder_diameter = encoder_diameter
+		previous_item = False
+		position_size = 360.0/(2**bits)
+
+		for i in range(len(gray_code[0])-1, 0, -1):
+			for j in gray_code:
+				if j[i] == True:
+					segment_size += 1
+					if segment_size == 1:
+						start_angle_position = index
+					previous_item = True
+				elif j[i] == False and previous_item == True:
+					segments.append(self.drawSegment(line_style, start_angle_position*position_size, segment_size*position_size, current_encoder_diameter, track_width))
+					segment_size = 0
+					previous_item = False
+					start_angle_position = 0
+				index += 1
+
+			if previous_item == True:
+				segments.append(self.drawSegment(line_style, start_angle_position*position_size, segment_size*position_size, current_encoder_diameter, track_width))
+				segment_size = 0
+				previous_item = False
+				start_angle_position = 0
+			current_encoder_diameter -= 2*track_distance
+			index = 0
 
 	# This function creates the path for one single segment
 	def drawSegment(self, line_style, angle, segment_angle, outer_diameter, width):
@@ -159,7 +208,8 @@ class EncoderDiskGenerator(inkex.Effect):
 		# Angle of one single segment
 		segment_angle = 360.0/(self.options.segments*2)
 
-		gray_code_bits = 4
+"""
+		gray_code_bits = 5
 		gray_code = self.createGrayCode(gray_code_bits)
 		inkex.errormsg(gray_code)
 
@@ -194,7 +244,10 @@ class EncoderDiskGenerator(inkex.Effect):
 				start_angle_position = 0
 			encoder_diameter += 40
 			index = 0
-					
+"""
+		segments = drawGrayEncoder(self.options.bits, self.options.encoder_diameter, self.options.track_width, self.options.track_distance)
+		for item in segments:
+			self.addElement('path', group, item)
 
 		#inkex.errormsg("Gray code: " +str(self.createGrayCode(4)))
 """
