@@ -51,6 +51,33 @@ class EncoderDiskGenerator(inkex.Effect):
 	def parsePathData(self, command, point):
 		path_data = command + ' %f ' %point[0] + ' %f ' %point[1] 
 		return path_data
+	
+	# This function creates a gray code of size n (n >= 1) in the format of a list
+	def createGrayCode(self, n):
+
+		if n == 1:
+			return [[False], [True]]
+
+		gray_code = [[False], [True]]
+
+		for i in range(n-1):
+			temp = []
+			for j in range(len(gray_code[0]), 0, -1):
+				for k in range(0, len(gray_code)):
+					if j == len(gray_code[0]):
+						temp.append([gray_code[k][-j]])
+					else:
+						temp[k].append(gray_code[k][-j])
+			while temp:
+				gray_code.append(temp.pop())
+			for j in range(0, len(gray_code)):
+				if j < len(gray_code)/2:
+					gray_code[j].insert(0, False)
+				else:
+					gray_code[j].insert(0, True)
+			temp = []
+
+		return gray_code
 
 	# This function creates the path for one single segment
 	def drawSegment(self, line_style, angle, segment_angle, outer_diameter, width):
@@ -129,6 +156,8 @@ class EncoderDiskGenerator(inkex.Effect):
 
 		# Angle of one single segment
 		segment_angle = 360.0/(self.options.segments*2)
+
+		inkex.errormsg("Gray code: " +str(self.createGrayCode(4)))
 
 		for segment_number in range(0, self.options.segments):
 
