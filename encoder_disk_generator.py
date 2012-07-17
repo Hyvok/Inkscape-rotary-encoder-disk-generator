@@ -17,6 +17,10 @@ class EncoderDiskGenerator(inkex.Effect):
 		
 	def __init__(self):
 		inkex.Effect.__init__(self)
+		self.OptionParser.add_option("--tab",
+				        action="store", type="string",
+						dest="tab", default="rotary_enc",
+				        help="Selected tab")
 		self.OptionParser.add_option("--diameter",
 				        action="store", type="float",
 						dest="diameter", default=0.0,
@@ -61,6 +65,10 @@ class EncoderDiskGenerator(inkex.Effect):
 				        action="store", type="float", 
 				        dest="track_distance", default=0.0,
 				        help="Distance between tracks")
+		self.OptionParser.add_option("--brgc_diameter",
+				        action="store", type="float",
+						dest="brgc_diameter", default=0.0,
+				        help="Diameter of the encoder disk")
 
 	# This function just concatenates the point and the command and returns
 	# the data string
@@ -97,7 +105,8 @@ class EncoderDiskGenerator(inkex.Effect):
 
 		return gray_code
 
-	def drawGrayEncoder(self, bits, encoder_diameter, track_width, track_distance):
+	def drawGrayEncoder(self, line_style, bits, encoder_diameter, track_width, 
+		track_distance):
 		gray_code = self.createGrayCode(bits)
 
 		segments = []
@@ -108,7 +117,7 @@ class EncoderDiskGenerator(inkex.Effect):
 		previous_item = False
 		position_size = 360.0/(2**bits)
 
-		for i in range(len(gray_code[0])-1, 0, -1):
+		for i in range(len(gray_code[0])-1, -1, -1):
 			for j in gray_code:
 				if j[i] == True:
 					segment_size += 1
@@ -116,19 +125,24 @@ class EncoderDiskGenerator(inkex.Effect):
 						start_angle_position = index
 					previous_item = True
 				elif j[i] == False and previous_item == True:
-					segments.append(self.drawSegment(line_style, start_angle_position*position_size, segment_size*position_size, current_encoder_diameter, track_width))
+					segments.append(self.drawSegment(line_style, \
+						start_angle_position*position_size, segment_size*position_size, \
+						current_encoder_diameter, track_width))
 					segment_size = 0
 					previous_item = False
 					start_angle_position = 0
 				index += 1
 
 			if previous_item == True:
-				segments.append(self.drawSegment(line_style, start_angle_position*position_size, segment_size*position_size, current_encoder_diameter, track_width))
+				segments.append(self.drawSegment(line_style, \
+					start_angle_position*position_size, segment_size*position_size, \
+					current_encoder_diameter, track_width))
 				segment_size = 0
 				previous_item = False
 				start_angle_position = 0
-			current_encoder_diameter -= 2*track_distance
+			current_encoder_diameter -= (2*track_distance+2*track_width)
 			index = 0
+		return segments
 
 	# This function creates the path for one single segment
 	def drawSegment(self, line_style, angle, segment_angle, outer_diameter, width):
@@ -166,6 +180,34 @@ class EncoderDiskGenerator(inkex.Effect):
 		self.current_layer.append(inkex.etree.SubElement(group, 
 		inkex.addNS(element_type,'svg'), element_attributes))
 
+	def drawCircles(self, hole_diameter, diameter):
+		# Attributes for the center hole, then create it, if diameter is 0, dont
+		# create it
+		circle_elements = []
+		attributes = {
+			'style'     : simplestyle.formatStyle({'stroke':'none', 'fill':'black'}),
+			'r'         : str(hole_diameter/2)
+		}
+		if self.options.hole_diameter > 0:
+			circle_elements.append(attributes)
+
+		# Attributes for the guide hole in the center hole, then create it
+		attributes = {
+			'style'     : simplestyle.formatStyle({'stroke':'white','fill':'white'}),
+			'r'         : '1'
+		}
+		circle_elements.append(attributes)
+
+		# Attributes for the outer rim, then create it
+		attributes = {
+			'style'     : simplestyle.formatStyle({'stroke':'black', 'stroke-width':'1', 'fill':'none'}),
+			'r'         : str(diameter/2)
+		}
+		if self.options.diameter > 0:
+			circle_elements.append(attributes)
+
+		return circle_elements
+
 	def effect(self):
 
 		# Group to put all the elements in, center set in the middle of the view
@@ -174,30 +216,6 @@ class EncoderDiskGenerator(inkex.Effect):
 			'transform':'translate' + str(self.view_center)
 		})
 
-		# Attributes for the center hole, then create it, if diameter is 0, dont
-		# create it
-		attributes = {
-			'style'     : simplestyle.formatStyle({'stroke':'none', 'fill':'black'}),
-			'r'         : str(self.options.hole_diameter/2)
-		}
-		if self.options.hole_diameter > 0:
-			self.addElement('circle', group, attributes)
-
-		# Attributes for the guide hole in the center hole, then create it
-		attributes = {
-			'style'     : simplestyle.formatStyle({'stroke':'white','fill':'white'}),
-			'r'         : '1'
-		}
-		self.addElement('circle', group, attributes)
-
-		# Attributes for the outer rim, then create it
-		attributes = {
-			'style'     : simplestyle.formatStyle({'stroke':'black', 'stroke-width':'1', 'fill':'none'}),
-			'r'         : str(self.options.diameter/2)
-		}
-		if self.options.diameter > 0:
-			self.addElement('circle', group, attributes)
-
 		# Line style for the encoder segments
 		line_style   = { 
 			'stroke'		: 	'black',
@@ -205,74 +223,49 @@ class EncoderDiskGenerator(inkex.Effect):
 			'fill'			:	'black'
 		}
 
-		# Angle of one single segment
-		segment_angle = 360.0/(self.options.segments*2)
+		if self.options.tab == "\"brgc\"":
+			if (((self.options.encoder_diameter/2)-(self.options.bits*self.options.track_width+\
+				(self.options.bits-1)*self.options.track_distance))) < self.options.hole_diameter/2:
+				inkex.errormsg("Innermost encoder smaller than the center hole!")
+			else:
+				segments = self.drawGrayEncoder(line_style, self.options.bits, \
+					self.options.encoder_diameter, self.options.track_width, self.options.track_distance)
+				circle_elements = self.drawCircles(self.options.hole_diameter, self.options.brgc_diameter)
+				for item in segments:
+					self.addElement('path', group, item)
+				for circle in circle_elements:
+					self.addElement('circle', group, circle)
 
-"""
-		gray_code_bits = 5
-		gray_code = self.createGrayCode(gray_code_bits)
-		inkex.errormsg(gray_code)
+		if self.options.tab == "\"rotary_enc\"":
+			# Angle of one single segment
+			segment_angle = 360.0/(self.options.segments*2)
 
-		segment_size = 0
-		start_angle_position = 0
-		index = 0
-		previous_item = False
-		encoder_diameter = 100.0
-		for i in range(len(gray_code[0])):
-			inkex.errormsg("Bit: " + str(i))
-			for j in gray_code:
-				if j[i] == True:
-					segment_size += 1
-					if segment_size == 1:
-						start_angle_position = index
-					previous_item = True
-				elif j[i] == False and previous_item == True:
-					segment = self.drawSegment(line_style, start_angle_position*(360.0/(2**gray_code_bits)), segment_size*(360.0/(2**gray_code_bits)), encoder_diameter, self.options.outer_encoder_width)
+			for segment_number in range(0, self.options.segments):
+
+				angle = segment_number*(segment_angle*2)
+
+				if 	self.options.outer_encoder_width > 0 and \
+					self.options.outer_encoder_diameter > 0 and \
+					self.options.outer_encoder_diameter/2 > self.options.outer_encoder_width:
+
+					segment = self.drawSegment(line_style, angle, segment_angle,
+						self.options.outer_encoder_diameter, self.options.outer_encoder_width)
 					self.addElement('path', group, segment)
-					inkex.errormsg("Segment size: " +str(segment_size) + " start angle position: " + str(start_angle_position))
-					segment_size = 0
-					previous_item = False
-					start_angle_position = 0
-				index += 1
 
-			if previous_item == True:
-				segment = self.drawSegment(line_style, start_angle_position*(360.0/(2**gray_code_bits)), segment_size*(360.0/(2**gray_code_bits)), self.options.outer_encoder_diameter, self.options.outer_encoder_width)
-				self.addElement('path', group, segment)
-				inkex.errormsg("Segment size: " +str(segment_size) + " start angle position: " + str(start_angle_position))
-				segment_size = 0
-				previous_item = False
-				start_angle_position = 0
-			encoder_diameter += 40
-			index = 0
-"""
-		segments = drawGrayEncoder(self.options.bits, self.options.encoder_diameter, self.options.track_width, self.options.track_distance)
-		for item in segments:
-			self.addElement('path', group, item)
+				# If the inner encoder diameter is something else than 0; create it
+				if 	self.options.outer_encoder_width > 0 and \
+					self.options.inner_encoder_diameter > 0 and \
+					self.options.inner_encoder_diameter/2 > self.options.inner_encoder_width:
 
-		#inkex.errormsg("Gray code: " +str(self.createGrayCode(4)))
-"""
-		for segment_number in range(0, self.options.segments):
+					# The inner encoder must be half an encoder segment ahead of the outer one
+					segment = self.drawSegment(line_style, angle+(segment_angle/2), segment_angle,
+						self.options.inner_encoder_diameter, self.options.inner_encoder_width)
+					self.addElement('path', group, segment)
 
-			angle = segment_number*(segment_angle*2)
+				circle_elements = self.drawCircles(self.options.hole_diameter, self.options.diameter)
+				for circle in circle_elements:
+					self.addElement('circle', group, circle)
 
-			if 	self.options.outer_encoder_width > 0 and \
-				self.options.outer_encoder_diameter > 0 and \
-				self.options.outer_encoder_diameter/2 > self.options.outer_encoder_width:
-
-				segment = self.drawSegment(line_style, angle, segment_angle,
-					self.options.outer_encoder_diameter, self.options.outer_encoder_width)
-				self.addElement('path', group, segment)
-
-			# If the inner encoder diameter is something else than 0; create it
-			if 	self.options.outer_encoder_width > 0 and \
-				self.options.inner_encoder_diameter > 0 and \
-				self.options.inner_encoder_diameter/2 > self.options.inner_encoder_width:
-
-				# The inner encoder must be half an encoder segment ahead of the outer one
-				segment = self.drawSegment(line_style, angle+(segment_angle/2), segment_angle,
-					self.options.inner_encoder_diameter, self.options.inner_encoder_width)
-				self.addElement('path', group, segment)
-"""
 if __name__ == '__main__':
 	# Run the effect
 	effect = EncoderDiskGenerator()
