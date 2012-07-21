@@ -10,25 +10,25 @@
 		<param name="hole_diameter" type="float" min="0.0" max="1000.0" _gui-text="Diameter of the center hole">0.0</param>
 		<param name="segments" type="int" min="1" max="10000" _gui-text="Number of segments">1</param>
 		<param name="outer_encoder_diameter" type="float" min="0.0" max="1000.0" _gui-text="Diameter of the outer encoder disk">0.0</param>
-		<param name="outer_encoder_width" type="float" min="0.0" max="1000.0" _gui-text="Width of the outer encoder disk">0.0</param>
+		<param name="outer_encoder_width" type="float" min="1.0" max="1000.0" _gui-text="Width of the outer encoder disk">0.0</param>
 		<param name="inner_encoder_diameter" type="float" min="0.0" max="1000.0" _gui-text="Diameter of the inner encoder disk">0.0</param>
-		<param name="inner_encoder_width" type="float" min="0.0" max="1000.0" _gui-text="Width of the inner encoder disk">0.0</param>
+		<param name="inner_encoder_width" type="float" min="1.0" max="1000.0" _gui-text="Width of the inner encoder disk">0.0</param>
     </page>
     <page name="brgc" _gui-text="Gray encoder (BRGC)">
 		<param name="brgc_diameter" type="float" min="0.0" max="1000.0" _gui-text="Diameter of the encoder disk">0.0</param>
-		<param name="hole_diameter" type="float" min="0.0" max="1000.0" _gui-text="Diameter of the center hole">0.0</param>
+		<param name="brgc_hole_diameter" type="float" min="0.0" max="1000.0" _gui-text="Diameter of the center hole">0.0</param>
 		<param name="bits" type="int" min="1" max="10" _gui-text="Number of bits/tracks">1</param>
-		<param name="encoder_diameter" type="float" min="0.0" max="1000.0" _gui-text="Outer diameter of the last track">0.0</param>
-		<param name="track_width" type="float" min="0.0" max="1000.0" _gui-text="Width of one track">0.0</param>
+		<param name="encoder_diameter" type="float" min="1.0" max="1000.0" _gui-text="Outer diameter of the last track">0.0</param>
+		<param name="track_width" type="float" min="1.0" max="1000.0" _gui-text="Width of one track">0.0</param>
 		<param name="track_distance" type="float" min="0.0" max="1000.0" _gui-text="Distance between tracks">0.0</param>
     </page>
 	    <page name="stgc" _gui-text="Single-track gray code (STGC)">
 		<param name="stgc_diameter" type="float" min="0.0" max="1000.0" _gui-text="Diameter of the encoder disk">0.0</param>
-		<param name="hole_diameter" type="float" min="0.0" max="1000.0" _gui-text="Diameter of the center hole">0.0</param>
+		<param name="stgc_hole_diameter" type="float" min="0.0" max="1000.0" _gui-text="Diameter of the center hole">0.0</param>
 		<param name="cutouts" type="int" min="1" max="5" _gui-text="Number of cutouts">1</param>
 		<param name="sensors" type="int" min="1" max="36" _gui-text="Number of sensors">1</param>
-		<param name="encoder_diameter" type="float" min="0.0" max="1000.0" _gui-text="Outer diameter of track">0.0</param>
-		<param name="track_width" type="float" min="0.0" max="1000.0" _gui-text="Width of one track">0.0</param>
+		<param name="stgc_encoder_diameter" type="float" min="1.0" max="1000.0" _gui-text="Outer diameter of track">0.0</param>
+		<param name="stgc_track_width" type="float" min="1.0" max="1000.0" _gui-text="Width of one track">0.0</param>
     </page>
  </param>
 <effect>
