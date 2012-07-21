@@ -69,6 +69,18 @@ class EncoderDiskGenerator(inkex.Effect):
 				        action="store", type="float",
 						dest="brgc_diameter", default=0.0,
 				        help="Diameter of the encoder disk")
+		self.OptionParser.add_option("--stgc_diameter",
+				        action="store", type="float",
+						dest="stgc_diameter", default=0.0,
+				        help="Diameter of the encoder disk")
+		self.OptionParser.add_option("--cutouts",
+				        action="store", type="int", 
+				        dest="cutouts", default=1,
+				        help="Number of cutouts")
+		self.OptionParser.add_option("--sensors",
+				        action="store", type="int", 
+				        dest="sensors", default=1,
+				        help="Number of sensors")
 
 	# This function just concatenates the point and the command and returns
 	# the data string
@@ -105,6 +117,7 @@ class EncoderDiskGenerator(inkex.Effect):
 
 		return gray_code
 
+	# This function returns the segments for a gray encoder
 	def drawGrayEncoder(self, line_style, bits, encoder_diameter, track_width, 
 		track_distance):
 		gray_code = self.createGrayCode(bits)
@@ -142,6 +155,39 @@ class EncoderDiskGenerator(inkex.Effect):
 				start_angle_position = 0
 			current_encoder_diameter -= (2*track_distance+2*track_width)
 			index = 0
+		return segments
+
+	# Check if there is too many cutouts compared to number of sensors
+	def invalidSTGrayEncoder(self, cutouts, sensors):
+		if sensors < 6 and cutouts == 1:
+			pass
+		elif sensors <= 10 and cutouts <= 2:
+			pass
+		elif sensors <= 16 and cutouts <= 3:
+			pass
+		elif sensors <= 23 and cutouts <= 4:
+			pass
+		elif sensors <= 36 and cutouts <= 5:
+			pass
+		else:
+			return False
+
+		return True
+
+	# This function returns the segments for a single-track gray encoder
+	def drawSTGrayEncoder(self, line_style, cutouts, sensors, encoder_diameter, track_width):
+
+		segments = []
+		resolution = 360.0/(cutouts*2*sensors)
+		current_angle = 0.0
+		for n in range(cutouts):
+			added_angle = ((2*cutouts+1)*resolution)
+			current_segment_size = ((n*2+2)*cutouts+1)*resolution
+			segments.append(self.drawSegment(line_style, current_angle, 
+							current_segment_size, encoder_diameter, track_width))
+			inkex.errormsg("Current angle: " +str(current_angle)+ " segment size: " + str(current_segment_size) + " added angle: " +str(added_angle))
+			current_angle += added_angle + current_segment_size
+
 		return segments
 
 	# This function creates the path for one single segment
@@ -228,9 +274,24 @@ class EncoderDiskGenerator(inkex.Effect):
 				(self.options.bits-1)*self.options.track_distance))) < self.options.hole_diameter/2:
 				inkex.errormsg("Innermost encoder smaller than the center hole!")
 			else:
-				segments = self.drawGrayEncoder(line_style, self.options.bits, \
-					self.options.encoder_diameter, self.options.track_width, self.options.track_distance)
+				segments = 	self.drawGrayEncoder(line_style, self.options.bits, \
+							self.options.encoder_diameter, self.options.track_width, self.options.track_distance)
 				circle_elements = self.drawCircles(self.options.hole_diameter, self.options.brgc_diameter)
+				for item in segments:
+					self.addElement('path', group, item)
+				for circle in circle_elements:
+					self.addElement('circle', group, circle)
+
+		if self.options.tab == "\"stgc\"":
+			if (self.options.encoder_diameter/2)-self.options.track_width < self.options.hole_diameter/2:
+				inkex.errormsg("Encoder smaller than the center hole!")
+			elif not self.invalidSTGrayEncoder(self.options.cutouts, self.options.sensors):
+				inkex.errormsg("Too many cutouts compared to number of sensors!")
+			else:
+				segments = 	self.drawSTGrayEncoder(line_style, self.options.cutouts, 
+							self.options.sensors, self.options.encoder_diameter, 
+							self.options.track_width)
+				circle_elements = self.drawCircles(self.options.hole_diameter, self.options.stgc_diameter)
 				for item in segments:
 					self.addElement('path', group, item)
 				for circle in circle_elements:
@@ -248,8 +309,8 @@ class EncoderDiskGenerator(inkex.Effect):
 					self.options.outer_encoder_diameter > 0 and \
 					self.options.outer_encoder_diameter/2 > self.options.outer_encoder_width:
 
-					segment = self.drawSegment(line_style, angle, segment_angle,
-						self.options.outer_encoder_diameter, self.options.outer_encoder_width)
+					segment = 	self.drawSegment(line_style, angle, segment_angle,
+								self.options.outer_encoder_diameter, self.options.outer_encoder_width)
 					self.addElement('path', group, segment)
 
 				# If the inner encoder diameter is something else than 0; create it
@@ -258,8 +319,8 @@ class EncoderDiskGenerator(inkex.Effect):
 					self.options.inner_encoder_diameter/2 > self.options.inner_encoder_width:
 
 					# The inner encoder must be half an encoder segment ahead of the outer one
-					segment = self.drawSegment(line_style, angle+(segment_angle/2), segment_angle,
-						self.options.inner_encoder_diameter, self.options.inner_encoder_width)
+					segment = 	self.drawSegment(line_style, angle+(segment_angle/2), segment_angle,
+								self.options.inner_encoder_diameter, self.options.inner_encoder_width)
 					self.addElement('path', group, segment)
 
 				circle_elements = self.drawCircles(self.options.hole_diameter, self.options.diameter)

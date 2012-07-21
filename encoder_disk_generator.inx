@@ -22,6 +22,14 @@
 		<param name="track_width" type="float" min="0.0" max="1000.0" _gui-text="Width of one track">0.0</param>
 		<param name="track_distance" type="float" min="0.0" max="1000.0" _gui-text="Distance between tracks">0.0</param>
     </page>
+	    <page name="stgc" _gui-text="Single-track gray code (STGC)">
+		<param name="stgc_diameter" type="float" min="0.0" max="1000.0" _gui-text="Diameter of the encoder disk">0.0</param>
+		<param name="hole_diameter" type="float" min="0.0" max="1000.0" _gui-text="Diameter of the center hole">0.0</param>
+		<param name="cutouts" type="int" min="1" max="5" _gui-text="Number of cutouts">1</param>
+		<param name="sensors" type="int" min="1" max="36" _gui-text="Number of sensors">1</param>
+		<param name="encoder_diameter" type="float" min="0.0" max="1000.0" _gui-text="Outer diameter of track">0.0</param>
+		<param name="track_width" type="float" min="0.0" max="1000.0" _gui-text="Width of one track">0.0</param>
+    </page>
  </param>
 <effect>
 <object-type>all</object-type>
