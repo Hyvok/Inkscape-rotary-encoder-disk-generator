@@ -280,8 +280,8 @@ class EncoderDiskGenerator(inkex.Effect):
 
 		# Line style for the encoder segments
 		line_style   = { 
-			'stroke'		: 	'black',
-			'stroke-width'	:	'1',
+			'stroke'		: 	'white',
+			'stroke-width'	:	'0',
 			'fill'			:	'black'
 		}
 
