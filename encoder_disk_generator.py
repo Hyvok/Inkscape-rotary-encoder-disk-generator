@@ -255,7 +255,7 @@ class EncoderDiskGenerator(inkex.Effect):
 
 		# Attributes for the guide hole in the center hole, then create it
 		attributes = {
-			'style'     : simplestyle.formatStyle({'stroke':'white','fill':'white'}),
+			'style'     : simplestyle.formatStyle({'stroke':'black','fill':'white', 'stroke-width':'0.1'}),
 			'r'         : '1'
 		}
 		circle_elements.append(attributes)
