@@ -174,21 +174,21 @@ class EncoderDiskGenerator(inkex.Effect):
 		return segments
 
 	# Check if there is too many cutouts compared to number of sensors
-	def invalidSTGrayEncoder(self, cutouts, sensors):
-		if sensors < 6 and cutouts == 1:
+	def validSTGrayEncoder(self, cutouts, sensors):
+		if sensors < 6 and cutouts > 1:
 			pass
-		elif sensors <= 10 and cutouts <= 2:
+		elif sensors <= 10 and cutouts > 2:
 			pass
-		elif sensors <= 16 and cutouts <= 3:
+		elif sensors <= 16 and cutouts > 3:
 			pass
-		elif sensors <= 23 and cutouts <= 4:
+		elif sensors <= 23 and cutouts > 4:
 			pass
-		elif sensors <= 36 and cutouts <= 5:
+		elif sensors <= 36 and cutouts > 5:
 			pass
 		else:
-			return False
+			return True
 
-		return True
+		return False
 
 	# This function returns the segments for a single-track gray encoder
 	def drawSTGrayEncoder(self, line_style, cutouts, sensors, encoder_diameter, track_width):
@@ -197,11 +197,10 @@ class EncoderDiskGenerator(inkex.Effect):
 		resolution = 360.0/(cutouts*2*sensors)
 		current_angle = 0.0
 		for n in range(cutouts):
-			added_angle = ((2*cutouts+1)*resolution)
+			added_angle = ((1*cutouts+1)*resolution)
 			current_segment_size = ((n*2+2)*cutouts+1)*resolution
 			segments.append(self.drawSegment(line_style, current_angle, 
 							current_segment_size, encoder_diameter, track_width))
-			inkex.errormsg("Current angle: " +str(current_angle)+ " segment size: " + str(current_segment_size) + " added angle: " +str(added_angle))
 			current_angle += added_angle + current_segment_size
 
 		return segments
@@ -255,7 +254,7 @@ class EncoderDiskGenerator(inkex.Effect):
 
 		# Attributes for the guide hole in the center hole, then create it
 		attributes = {
-			'style'     : simplestyle.formatStyle({'stroke':'white','fill':'white'}),
+						'style'     : simplestyle.formatStyle({'stroke':'white','fill':'white', 'stroke-width':'0.1'}),
 			'r'         : '1'
 		}
 		circle_elements.append(attributes)
@@ -280,8 +279,8 @@ class EncoderDiskGenerator(inkex.Effect):
 
 		# Line style for the encoder segments
 		line_style   = { 
-			'stroke'		: 	'black',
-			'stroke-width'	:	'1',
+			'stroke'		: 	'white',
+			'stroke-width'	:	'0',
 			'fill'			:	'black'
 		}
 
@@ -301,7 +300,7 @@ class EncoderDiskGenerator(inkex.Effect):
 		if self.options.tab == "\"stgc\"":
 			if (self.options.stgc_encoder_diameter/2)-self.options.stgc_track_width < self.options.stgc_hole_diameter/2:
 				inkex.errormsg("Encoder smaller than the center hole!")
-			elif not self.invalidSTGrayEncoder(self.options.cutouts, self.options.sensors):
+			elif not self.validSTGrayEncoder(self.options.cutouts, self.options.sensors):
 				inkex.errormsg("Too many cutouts compared to number of sensors!")
 			else:
 				segments = 	self.drawSTGrayEncoder(line_style, self.options.cutouts, 
