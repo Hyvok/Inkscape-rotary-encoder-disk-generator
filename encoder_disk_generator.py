@@ -304,7 +304,7 @@ class EncoderDiskGenerator(inkex.Effect):
 				inkex.errormsg("Too many cutouts compared to number of sensors!")
 			else:
 				segments = 	self.drawSTGrayEncoder(line_style, self.options.cutouts, 
-							self.options.sensors, self.options.encoder_diameter, 
+							self.options.sensors, self.options.stgc_encoder_diameter, 
 							self.options.stgc_track_width)
 				circle_elements = self.drawCircles(self.options.stgc_hole_diameter, self.options.stgc_diameter)
 				for item in segments:
