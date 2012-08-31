@@ -338,10 +338,10 @@ class EncoderDiskGenerator(inkex.Effect):
 								self.options.inner_encoder_diameter, self.options.inner_encoder_width)
 					self.addElement('path', group, segment)
 
-			
-				circle_elements = self.drawCircles(self.options.hole_diameter, self.options.diameter)
-				for circle in circle_elements:
-					self.addElement('circle', group, circle)
+		
+			circle_elements = self.drawCircles(self.options.hole_diameter, self.options.diameter)
+			for circle in circle_elements:
+				self.addElement('circle', group, circle)
 
 if __name__ == '__main__':
 	# Run the effect
