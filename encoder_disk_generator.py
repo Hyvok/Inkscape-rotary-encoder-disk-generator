@@ -196,8 +196,8 @@ class EncoderDiskGenerator(inkex.Effect):
 		segments = []
 		resolution = 360.0/(cutouts*2*sensors)
 		current_angle = 0.0
+		added_angle = ((2*cutouts+1)*resolution)
 		for n in range(cutouts):
-			added_angle = ((1*cutouts+1)*resolution)
 			current_segment_size = ((n*2+2)*cutouts+1)*resolution
 			segments.append(self.drawSegment(line_style, current_angle, 
 							current_segment_size, encoder_diameter, track_width))
