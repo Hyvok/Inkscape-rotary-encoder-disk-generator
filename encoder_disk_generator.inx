@@ -4,8 +4,7 @@
 <id>dgkelectronics.com.encoder.disk.generator</id>
 <dependency type="executable" location="extensions">inkex.py</dependency>
 <dependency 
-    type="executable" location="extensions">encoder_disk_generator.py
-</dependency>
+    type="executable" location="extensions">encoder_disk_generator.py</dependency>
 <param name="tab" type="notebook">  
     <page name="rotary_enc" _gui-text="Rotary encoder">
         <param  name="diameter" type="float" min="0.0" max="1000.0" 
