@@ -69,6 +69,26 @@ class EncoderDiskGenerator(inkex.Effect):
 					action="store", type="float",
 					dest="track_distance", default=0.0,
 					help="Distance between tracks")
+		self.OptionParser.add_option("--m_diameter",
+					action="store", type="float",
+						dest="m_diameter", default=0.0,
+					help="Diameter of the encoder disk")
+		self.OptionParser.add_option("--m_hole_diameter",
+					action="store", type="float",
+					dest="m_hole_diameter", default=0.0,
+					help="Diameter of the center hole")
+		self.OptionParser.add_option("--m_segments",
+					action="store", type="int",
+					dest="m_segments", default=0,
+					help="Number of segments/number of bits")
+		self.OptionParser.add_option("--m_outer_encoder_diameter",
+					action="store", type="float",
+					dest="m_outer_encoder_diameter", default=0.0,
+					help="Diameter of the outer encoder disk")
+		self.OptionParser.add_option("--m_outer_encoder_width",
+					action="store", type="float",
+					dest="m_outer_encoder_width", default=0.0,
+					help="Width of the outer encoder disk")
 		self.OptionParser.add_option("--brgc_diameter",
 					action="store", type="float",
 						dest="brgc_diameter", default=0.0,
@@ -373,6 +393,9 @@ class EncoderDiskGenerator(inkex.Effect):
 		for circle in circle_elements:
 			self.addElement('circle', group, circle)
 
+	def effectMarkovEnc(self, group, line_style):
+		pass
+
 	def effect(self):
 
 		# Group to put all the elements in, center set in the middle of the view
@@ -396,6 +419,9 @@ class EncoderDiskGenerator(inkex.Effect):
 
 		if self.options.tab == "\"rotary_enc\"":
 			self.effectRotaryEnc(group, line_style)
+
+		if self.options.tab == "\"markov_enc\"":
+			self.effectMarkovEnc(group, line_style)
 
 
 if __name__ == '__main__':
