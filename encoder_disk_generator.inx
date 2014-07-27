@@ -5,7 +5,20 @@
 <dependency type="executable" location="extensions">inkex.py</dependency>
 <dependency 
     type="executable" location="extensions">encoder_disk_generator.py</dependency>
-<param name="tab" type="notebook">  
+<param name="tab" type="notebook">
+    <page name="markov_enc" _gui-text="Markov-chain absolute encoder">
+        <param  name="m_diameter" type="float" min="0.0" max="1000.0" 
+                _gui-text="Diameter of the encoder disk">0.0</param>
+        <param  name="m_hole_diameter" type="float" min="0.0" max="1000.0" 
+                _gui-text="Diameter of the center hole">0.0</param>
+        <param  name="m_segments" type="int" min="1" max="10000" 
+                _gui-text="Number of segments">1</param>
+        <param  name="m_outer_encoder_diameter" type="float" min="0.0" 
+                max="1000.0" 
+                _gui-text="Diameter of the outer encoder disk">0.0</param>
+        <param  name="m_outer_encoder_width" type="float" min="1.0" max="1000.0" 
+                _gui-text="Width of the outer encoder disk">0.0</param>
+    </page>
     <page name="rotary_enc" _gui-text="Rotary encoder">
         <param  name="diameter" type="float" min="0.0" max="1000.0" 
                 _gui-text="Diameter of the encoder disk">0.0</param>
