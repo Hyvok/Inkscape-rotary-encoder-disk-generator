@@ -77,10 +77,10 @@ class EncoderDiskGenerator(inkex.Effect):
 					action="store", type="float",
 					dest="m_hole_diameter", default=0.0,
 					help="Diameter of the center hole")
-		self.OptionParser.add_option("--m_segments",
-					action="store", type="int",
-					dest="m_segments", default=0,
-					help="Number of segments/number of bits")
+		self.OptionParser.add_option("--m_bits",
+					action="store", type="string",
+					dest="m_bits", default="",
+					help="Bits of segments")
 		self.OptionParser.add_option("--m_outer_encoder_diameter",
 					action="store", type="float",
 					dest="m_outer_encoder_diameter", default=0.0,
@@ -394,7 +394,33 @@ class EncoderDiskGenerator(inkex.Effect):
 			self.addElement('circle', group, circle)
 
 	def effectMarkovEnc(self, group, line_style):
-		pass
+
+		bits = self.options.m_bits
+		m_segments = len(bits)
+		# Angle of one single segment
+		segment_angle = 360.0 / m_segments
+
+		for segment_number in range(0, m_segments):
+
+			angle = segment_number * segment_angle
+
+			if (self.options.m_outer_encoder_width > 0 and
+				self.options.m_outer_encoder_diameter > 0 and
+				self.options.m_outer_encoder_diameter / 2 >
+				self.options.m_outer_encoder_width):
+
+				segment = self.drawSegment(line_style, angle,
+					segment_angle,
+					self.options.m_outer_encoder_diameter,
+					self.options.m_outer_encoder_width)
+				if (bits[segment_number] == '1'):
+					self.addElement('path', group, segment)
+
+		circle_elements = self.drawCircles(
+			self.options.m_hole_diameter, self.options.m_diameter)
+
+		for circle in circle_elements:
+			self.addElement('circle', group, circle)
 
 	def effect(self):
 
