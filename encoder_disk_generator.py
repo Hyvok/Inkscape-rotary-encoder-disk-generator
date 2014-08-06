@@ -310,7 +310,13 @@ class EncoderDiskGenerator(inkex.Effect):
 
 		return circle_elements
 
-	def effectBrgc(self, group, line_style):
+	def drawCommonCircles(self, group, diameter, hole_diameter):
+		circle_elements = self.drawCircles(hole_diameter, diameter)
+
+		for circle in circle_elements:
+			self.addElement('circle', group, circle)
+
+	def effectBrgc(self, group, line_style, diameter, hole_diameter):
 
 		if (((self.options.encoder_diameter / 2) -
 			(self.options.bits * self.options.track_width +
@@ -323,17 +329,12 @@ class EncoderDiskGenerator(inkex.Effect):
 				self.options.encoder_diameter,
 				self.options.track_width,
 				self.options.track_distance)
+			for item in segments:
+				self.addElement('path', group, item)
 
-		circle_elements = self.drawCircles(
-			self.options.brgc_hole_diameter,
-			self.options.brgc_diameter)
+		self.drawCommonCircles(group, diameter, hole_diameter)
 
-		for item in segments:
-			self.addElement('path', group, item)
-		for circle in circle_elements:
-			self.addElement('circle', group, circle)
-
-	def effectStgc(self, group, line_style):
+	def effectStgc(self, group, line_style, diameter, hole_diameter):
 
 		if ((self.options.stgc_encoder_diameter / 2) -
 			self.options.stgc_track_width < self.options.stgc_hole_diameter / 2):
@@ -344,16 +345,12 @@ class EncoderDiskGenerator(inkex.Effect):
 			segments = self.drawSTGrayEncoder(line_style, self.options.cutouts,
 				self.options.sensors, self.options.stgc_encoder_diameter,
 				self.options.stgc_track_width)
+			for item in segments:
+				self.addElement('path', group, item)
 
-		circle_elements = self.drawCircles(
-			self.options.stgc_hole_diameter, self.options.stgc_diameter)
+		self.drawCommonCircles(group, diameter, hole_diameter)
 
-		for item in segments:
-			self.addElement('path', group, item)
-		for circle in circle_elements:
-			self.addElement('circle', group, circle)
-
-	def effectRotaryEnc(self, group, line_style):
+	def effectRotaryEnc(self, group, line_style, diameter, hole_diameter):
 
 		# Angle of one single segment
 		segment_angle = 360.0 / (self.options.segments * 2)
@@ -387,13 +384,9 @@ class EncoderDiskGenerator(inkex.Effect):
 
 				self.addElement('path', group, segment)
 
-		circle_elements = self.drawCircles(
-			self.options.hole_diameter, self.options.diameter)
+		self.drawCommonCircles(group, diameter, hole_diameter)
 
-		for circle in circle_elements:
-			self.addElement('circle', group, circle)
-
-	def effectMarkovEnc(self, group, line_style):
+	def effectMarkovEnc(self, group, line_style, diameter, hole_diameter):
 
 		bits = self.options.m_bits
 		m_segments = len(bits)
@@ -409,18 +402,16 @@ class EncoderDiskGenerator(inkex.Effect):
 				self.options.m_outer_encoder_diameter / 2 >
 				self.options.m_outer_encoder_width):
 
-				segment = self.drawSegment(line_style, angle,
-					segment_angle,
-					self.options.m_outer_encoder_diameter,
-					self.options.m_outer_encoder_width)
 				if (bits[segment_number] == '1'):
+					segment = self.drawSegment(
+						line_style, angle,
+						segment_angle,
+						self.options.m_outer_encoder_diameter,
+						self.options.m_outer_encoder_width)
+
 					self.addElement('path', group, segment)
 
-		circle_elements = self.drawCircles(
-			self.options.m_hole_diameter, self.options.m_diameter)
-
-		for circle in circle_elements:
-			self.addElement('circle', group, circle)
+		self.drawCommonCircles(group, diameter, hole_diameter)
 
 	def effect(self):
 
@@ -438,16 +429,24 @@ class EncoderDiskGenerator(inkex.Effect):
 		}
 
 		if self.options.tab == "\"brgc\"":
-			self.effectBrgc(group, line_style)
+			self.effectBrgc(group, line_style,
+			self.options.brgc_diameter,
+			self.options.brgc_hole_diameter)
 
 		if self.options.tab == "\"stgc\"":
-			self.effectStgc(group, line_style)
+			self.effectStgc(group, line_style,
+			self.options.stgc_diameter,
+			self.options.stgc_hole_diameter)
 
 		if self.options.tab == "\"rotary_enc\"":
-			self.effectRotaryEnc(group, line_style)
+			self.effectRotaryEnc(group, line_style,
+			self.options.diameter,
+			self.options.hole_diameter)
 
 		if self.options.tab == "\"markov_enc\"":
-			self.effectMarkovEnc(group, line_style)
+			self.effectMarkovEnc(group, line_style,
+			self.options.m_diameter,
+			self.options.m_hole_diameter)
 
 
 if __name__ == '__main__':
