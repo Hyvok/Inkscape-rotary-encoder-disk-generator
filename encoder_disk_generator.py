@@ -23,11 +23,11 @@ class EncoderDiskGenerator(inkex.Effect):
 		inkex.Effect.__init__(self)
 		self.OptionParser.add_option("--tab",
 					action="store", type="string",
-						dest="tab", default="rotary_enc",
+					dest="tab", default="rotary_enc",
 					help="Selected tab")
 		self.OptionParser.add_option("--diameter",
 					action="store", type="float",
-						dest="diameter", default=0.0,
+					dest="diameter", default=0.0,
 					help="Diameter of the encoder disk")
 		self.OptionParser.add_option("--hole_diameter",
 					action="store", type="float",
@@ -69,33 +69,33 @@ class EncoderDiskGenerator(inkex.Effect):
 					action="store", type="float",
 					dest="track_distance", default=0.0,
 					help="Distance between tracks")
-		self.OptionParser.add_option("--m_diameter",
+		self.OptionParser.add_option("--bm_diameter",
 					action="store", type="float",
-						dest="m_diameter", default=0.0,
+					dest="bm_diameter", default=0.0,
 					help="Diameter of the encoder disk")
-		self.OptionParser.add_option("--m_hole_diameter",
+		self.OptionParser.add_option("--bm_hole_diameter",
 					action="store", type="float",
-					dest="m_hole_diameter", default=0.0,
+					dest="bm_hole_diameter", default=0.0,
 					help="Diameter of the center hole")
-		self.OptionParser.add_option("--m_bits",
+		self.OptionParser.add_option("--bm_bits",
 					action="store", type="string",
-					dest="m_bits", default="",
+					dest="bm_bits", default="",
 					help="Bits of segments")
-		self.OptionParser.add_option("--m_outer_encoder_diameter",
+		self.OptionParser.add_option("--bm_outer_encoder_diameter",
 					action="store", type="float",
-					dest="m_outer_encoder_diameter", default=0.0,
+					dest="bm_outer_encoder_diameter", default=0.0,
 					help="Diameter of the outer encoder disk")
-		self.OptionParser.add_option("--m_outer_encoder_width",
+		self.OptionParser.add_option("--bm_outer_encoder_width",
 					action="store", type="float",
-					dest="m_outer_encoder_width", default=0.0,
+					dest="bm_outer_encoder_width", default=0.0,
 					help="Width of the outer encoder disk")
 		self.OptionParser.add_option("--brgc_diameter",
 					action="store", type="float",
-						dest="brgc_diameter", default=0.0,
+					dest="brgc_diameter", default=0.0,
 					help="Diameter of the encoder disk")
 		self.OptionParser.add_option("--stgc_diameter",
 					action="store", type="float",
-						dest="stgc_diameter", default=0.0,
+					dest="stgc_diameter", default=0.0,
 					help="Diameter of the encoder disk")
 		self.OptionParser.add_option("--brgc_hole_diameter",
 					action="store", type="float",
@@ -386,28 +386,28 @@ class EncoderDiskGenerator(inkex.Effect):
 
 		self.drawCommonCircles(group, diameter, hole_diameter)
 
-	def effectMarkovEnc(self, group, line_style, diameter, hole_diameter):
+	def effectBitmapEnc(self, group, line_style, diameter, hole_diameter):
 
-		bits = self.options.m_bits
-		m_segments = len(bits)
+		bits = self.options.bm_bits
+		bm_segments = len(bits)
 		# Angle of one single segment
-		segment_angle = 360.0 / m_segments
+		segment_angle = 360.0 / bm_segments
 
-		for segment_number in range(0, m_segments):
+		for segment_number in range(0, bm_segments):
 
 			angle = segment_number * segment_angle
 
-			if (self.options.m_outer_encoder_width > 0 and
-				self.options.m_outer_encoder_diameter > 0 and
-				self.options.m_outer_encoder_diameter / 2 >
-				self.options.m_outer_encoder_width):
+			if (self.options.bm_outer_encoder_width > 0 and
+				self.options.bm_outer_encoder_diameter > 0 and
+				self.options.bm_outer_encoder_diameter / 2 >
+				self.options.bm_outer_encoder_width):
 
 				if (bits[segment_number] == '1'):
 					segment = self.drawSegment(
 						line_style, angle,
 						segment_angle,
-						self.options.m_outer_encoder_diameter,
-						self.options.m_outer_encoder_width)
+						self.options.bm_outer_encoder_diameter,
+						self.options.bm_outer_encoder_width)
 
 					self.addElement('path', group, segment)
 
@@ -443,10 +443,10 @@ class EncoderDiskGenerator(inkex.Effect):
 			self.options.diameter,
 			self.options.hole_diameter)
 
-		if self.options.tab == "\"markov_enc\"":
-			self.effectMarkovEnc(group, line_style,
-			self.options.m_diameter,
-			self.options.m_hole_diameter)
+		if self.options.tab == "\"bitmap_enc\"":
+			self.effectBitmapEnc(group, line_style,
+			self.options.bm_diameter,
+			self.options.bm_hole_diameter)
 
 
 if __name__ == '__main__':

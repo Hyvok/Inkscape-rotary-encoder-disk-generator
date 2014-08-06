@@ -6,19 +6,6 @@
 <dependency 
     type="executable" location="extensions">encoder_disk_generator.py</dependency>
 <param name="tab" type="notebook">
-    <page name="markov_enc" _gui-text="Markov-chain absolute encoder">
-        <param  name="m_diameter" type="float" min="0.0" max="1000.0" 
-                _gui-text="Diameter of the encoder disk">0.0</param>
-        <param  name="m_hole_diameter" type="float" min="0.0" max="1000.0" 
-                _gui-text="Diameter of the center hole">0.0</param>
-        <param  name="m_bits" type="string"
-                _gui-text="Bits for segments">010011110111000010001101</param>
-        <param  name="m_outer_encoder_diameter" type="float" min="0.0" 
-                max="1000.0" 
-                _gui-text="Diameter of the outer encoder disk">0.0</param>
-        <param  name="m_outer_encoder_width" type="float" min="1.0" max="1000.0" 
-                _gui-text="Width of the outer encoder disk">0.0</param>
-    </page>
     <page name="rotary_enc" _gui-text="Rotary encoder">
         <param  name="diameter" type="float" min="0.0" max="1000.0" 
                 _gui-text="Diameter of the encoder disk">0.0</param>
@@ -64,6 +51,19 @@
                 _gui-text="Outer diameter of track">0.0</param>
         <param  name="stgc_track_width" type="float" min="1.0" max="1000.0" 
                 _gui-text="Width of one track">0.0</param>
+    </page>
+    <page name="bitmap_enc" _gui-text="Bitmap encoder">
+        <param  name="bm_diameter" type="float" min="0.0" max="1000.0" 
+                _gui-text="Diameter of the encoder disk">30.0</param>
+        <param  name="bm_hole_diameter" type="float" min="0.0" max="1000.0" 
+                _gui-text="Diameter of the center hole">5.0</param>
+        <param  name="bm_bits" type="string"
+                _gui-text="Bits for segments">010011110111000010001101</param>
+        <param  name="bm_outer_encoder_diameter" type="float" min="0.0" 
+                max="1000.0" 
+                _gui-text="Diameter of the outer encoder disk">25.0</param>
+        <param  name="bm_outer_encoder_width" type="float" min="1.0" max="1000.0" 
+                _gui-text="Width of the outer encoder disk">10.0</param>
     </page>
 </param>
 <effect>
