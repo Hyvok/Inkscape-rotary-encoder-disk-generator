@@ -11,8 +11,8 @@
                 _gui-text="Diameter of the encoder disk">0.0</param>
         <param  name="m_hole_diameter" type="float" min="0.0" max="1000.0" 
                 _gui-text="Diameter of the center hole">0.0</param>
-        <param  name="m_segments" type="int" min="1" max="10000" 
-                _gui-text="Number of segments">1</param>
+        <param  name="m_bits" type="string"
+                _gui-text="Bits for segments">010011110111000010001101</param>
         <param  name="m_outer_encoder_diameter" type="float" min="0.0" 
                 max="1000.0" 
                 _gui-text="Diameter of the outer encoder disk">0.0</param>
