@@ -399,9 +399,10 @@ class EncoderDiskGenerator(inkex.Effect):
 
 			if (self.options.bm_outer_encoder_width > 0 and
 				self.options.bm_outer_encoder_diameter > 0 and
-				self.options.bm_outer_encoder_diameter / 2 >
+				self.options.bm_outer_encoder_diameter >
 				self.options.bm_outer_encoder_width):
 
+				# Drawing only the black segments
 				if (bits[segment_number] == '1'):
 					segment = self.drawSegment(
 						line_style, angle,
