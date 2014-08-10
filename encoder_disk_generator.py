@@ -257,8 +257,9 @@ class EncoderDiskGenerator(inkex.Effect):
 
 	# This function adds an element to the document
 	def addElement(self, element_type, group, element_attributes):
-		self.current_layer.append(inkex.etree.SubElement(group,
-		inkex.addNS(element_type, 'svg'), element_attributes))
+		inkex.etree.SubElement(
+			group, inkex.addNS(element_type, 'svg'),
+			element_attributes)
 
 	def drawCircles(self, hole_diameter, diameter):
 		# Attributes for the center hole, then create it, if diameter is 0, dont
